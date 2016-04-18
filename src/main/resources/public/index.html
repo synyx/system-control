@@ -1,0 +1,403 @@
+<html>
+<head>
+    <title>Remote Control</title>
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+<body>
+
+
+
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+    <div class="container">
+        <h1>System Control v0.1</h1>
+        <p>Easy usage of remote API</p>
+        <p>Choose systems by their tags, execute an action on all of them.</p>
+
+    </div>
+</div>
+
+<div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+        <div class="col-md-2">
+            <div id="tags">
+
+            </div>
+        </div>
+       
+        <div class="col-md-8">
+            <div id="systems">
+
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div id="actions">
+
+            </div>
+        </div>
+        
+    </div>
+
+    <hr>
+
+    <footer>
+        <p>&copy; 2016 Marc</p>
+    </footer>
+</div> <!-- /container -->
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+<script src="http://backbonejs.org/backbone.js"></script>
+
+
+<script type="text/html" id="system-template">
+    <td><%= name %></td>
+    <td><%= status %></td>
+    <td><%= data %></td>
+    <td><%= time %></td>
+</script>
+
+
+<script type="text/html" id="system-list-template">
+    <h2>Systems</h2>
+    <table class="table">
+        <thead>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Data</th>
+        <th>Time</th>
+        </thead>
+        <tbody class="list">
+        
+        </tbody>
+        
+    </table>
+    
+</script>
+
+
+
+
+<script type="text/html" id="action-template">
+    
+        <button class="btn btn-default" id="trigger-action-<%= name %>">
+            <%= name %>
+        </button>    
+</script>
+
+
+<script type="text/html" id="action-list-template">
+    <h2>Actions</h2>
+    <div class="list">
+
+    </div>
+</script>
+
+
+
+<script type="text/html" id="system-tags-template">
+    <h2>Tags</h2>
+    <ul class="list">
+
+    </ul>
+</script>
+
+<script type="text/html" id="system-tag-template">
+   
+    <li class="tag">
+        <input type="checkbox" {{checked}} id="checkbox-<%= tag %>"/> 
+        <label for="checkbox-<%= tag %>"> <%= tag %></label>
+    </li>
+</script>
+
+
+<script>
+    $(function() {
+
+        var SystemModel = Backbone.Model.extend({
+            defaults : {
+                data: "-", 
+                status: "-",
+                time: "-"
+            }
+        });
+
+        var ActionModel = Backbone.Model.extend({
+            execute : function() {
+                
+            }
+        });
+
+        var ActionListModel = Backbone.Collection.extend({
+            url: '/action/',
+            model: ActionModel
+        });
+
+
+
+        var SystemListModel = Backbone.Collection.extend({
+            url: '/system/',
+            model: SystemModel,
+            initialize: function() {
+                this.selectedTags = [];
+            },
+
+            isTagSelected : function(tag) {
+                return _.contains(this.selectedTags, tag);
+            },
+            toggleTag : function(tag) {
+                if (this.isTagSelected(tag)) {
+                    this.selectedTags = _.without(this.selectedTags, tag);
+                } else {
+                    var added = this.selectedTags;
+                    added.push(tag);
+                    this.selectedTags = added;
+                }
+                this.trigger("change");
+            },
+            allTags : function() {
+                var tags = [];
+                this.forEach(function(model) {
+                    tags = _.union(tags, model.get("tags"));
+                });
+                return tags;
+            },
+            bySelectedTags : function() {
+                if (this.selectedTags.length === 0) {
+                    return this.byTags([]);
+                } else {
+                  return this.byTags(this.selectedTags);
+                }
+            },
+
+            byTags : function(tags) {
+
+                var orFilter = function(system) {
+                    var systemsTags = system.get("tags");
+                    var matchingTags = _.filter(systemsTags, function(systemTag) {
+                        return _.contains(tags, systemTag);
+                    });
+                    return matchingTags.length > 0;
+                };
+
+                var andFilter = function(system) {
+                    var systemsTags = system.get("tags");
+                    var matchingTags = _.filter(systemsTags, function(systemTag) {
+                        return _.contains(tags, systemTag);
+                    });
+                    return matchingTags.length == tags.length;
+                };
+                
+                return this.filter(andFilter);
+            }
+            
+           
+        });
+
+        var SystemView = Backbone.View.extend({
+
+            tagName: 'tr',
+            initialize: function() {
+                this.template = _.template($('#system-template').html());
+                this.listenTo(this.model, 'change', this.render);
+            },
+            render: function(){
+                this.$el.html(this.template(this.model.attributes));
+                return this;
+            }
+        });
+
+
+
+        var SystemListView = Backbone.View.extend({
+            initialize: function() {
+                _.bindAll(this, 'render');
+                this.template = _.template($('#system-list-template').html());
+                this.model.bind('reset', this.render);
+                this.model.bind('change', this.render);
+                this.model.bind('add', this.render);
+            },
+
+            render: function(){
+                var element = this.$el;
+                element.html(this.template(this.model.attributes));
+
+                var listNode = this.$el.find(".list");
+
+                // Go through the collection items
+                _.each(this.model.bySelectedTags(), function(model) {
+                    var system = new SystemView({
+                        model: model
+                    });
+                    listNode.append(system.render().$el);
+                });
+            }
+        });
+
+
+
+        var SystemTagsView = Backbone.View.extend({
+            initialize: function() {
+                _.bindAll(this, 'render');
+                this.template = _.template($('#system-tags-template').html());
+                this.tagTemplate = _.template($('#system-tag-template').html());
+                this.model.bind('reset', this.render);
+                this.model.bind('add', this.render);
+            },
+
+            render: function(){
+                var element = this.$el;
+                element.html(this.template(this.model.attributes));
+                var listNode = this.$el.find(".list");
+
+                // Go through the collection items
+                var tags = this.model.allTags();
+                var self = this;
+                _.each(tags, function(tag) {
+
+                    var tagHtml = self.tagTemplate({tag : tag});
+                    listNode.append(tagHtml);
+                    
+                    listNode.find('#checkbox-' + tag).click(function() {
+                        self.model.toggleTag(tag);
+                    });
+                    
+                });
+            }
+        });
+
+
+
+
+        var ActionListView = Backbone.View.extend({
+            initialize: function(options) {
+                _.bindAll(this, 'render');
+                this.template = _.template($('#action-list-template').html());
+                this.model.bind('reset', this.render);
+                this.model.bind('change', this.render);
+                this.model.bind('add', this.render);
+                this.executor = options.executor;
+            },
+
+            render: function(){
+                var element = this.$el;
+                element.html(this.template(this.model.attributes));
+
+                var listNode = this.$el.find(".list");
+                var executor = this.executor;
+
+                // Go through the collection items
+                this.model.forEach(function(model) {
+                    var action = new ActionView({
+                        model: model,
+                        executor : executor
+                    });
+                    listNode.append(action.render().$el);
+                });
+            }
+        });
+
+
+        var ActionView = Backbone.View.extend({
+            initialize: function(options) {
+                this.template = _.template($('#action-template').html());
+                this.listenTo(this.model, 'change', this.render);
+                this.executor = options.executor;
+            },
+            render: function(){
+                this.$el.html(this.template(this.model.attributes));
+
+                var action = this.model;
+                var executor = this.executor;
+                this.$el.find("#trigger-action-" + action.get("name")).click(function() {
+                    console.log("triggering action ", action);
+                    executor.execute(action);
+                });
+                
+                return this;
+            }
+        });
+
+
+
+        
+        var systemList = new SystemListModel();
+        systemList.fetch();
+
+        var actionList = new ActionListModel();
+        actionList.fetch();
+
+
+        var executor = {
+            execute: function(action) {
+                _.each(systemList.bySelectedTags(), function(system) {
+                    var url = "/action/" + action.get("name") + "?systemName=" + system.get("name") ;
+
+                    system.set("status", "Requesting...");
+                    system.set("data", "");
+                    
+                    $.get( url, function( data ) {
+                        console.log("Got answer" , data);
+                        system.set("status", data.status);
+                        if (data.data) {
+                            system.set("data", JSON.stringify(data.data));
+                        }
+                        system.set("time", new Date().toLocaleTimeString());
+                        
+                    });
+                })
+            }
+        };
+        
+        $(document).ready(function() {
+            var system = new SystemListView({
+                el: $("#systems"),
+                model: systemList
+            });
+            system.render();
+
+            
+            var actionView = new ActionListView({
+                el: $("#actions"),
+                model: actionList, 
+                executor : executor
+            });
+            actionView.render();
+
+
+            var tagsView = new SystemTagsView({
+                el: $("#tags"),
+                model: systemList
+            });
+            tagsView.render();
+                        
+        });
+
+
+        window.systemList = systemList;
+        window.actionList = actionList;
+
+        
+    });
+</script>
+
+
+
+
+</body>
+</html>
