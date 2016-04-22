@@ -17,17 +17,24 @@
 
 
 <!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
+<div class="well">
+    <div class="container-fluid">
         <h1>System Control v0.1</h1>
-        <p>Easy usage of remote API</p>
-        <p>Choose systems by their tags, execute an action on all of them.</p>
-
+        <p>Easy usage of remote API. Filter systems by their tags, execute an action on all of them.</p>
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
     <!-- Example row of columns -->
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div id="actions">
+
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-2">
             <div id="tags">
@@ -35,17 +42,13 @@
             </div>
         </div>
        
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div id="systems">
 
             </div>
         </div>
 
-        <div class="col-md-2">
-            <div id="actions">
 
-            </div>
-        </div>
         
     </div>
 
@@ -66,10 +69,10 @@
 
 
 <script type="text/html" id="system-template">
-    <td><%= name %></td>
+    <td><a href="<%= host %>"><%= name %></a></td>
+    <td><%= time %></td>
     <td><%= status %></td>
     <td><%= data %></td>
-    <td><%= time %></td>
 </script>
 
 
@@ -78,9 +81,9 @@
     <table class="table">
         <thead>
         <th>Name</th>
+        <th>Time</th>
         <th>Status</th>
         <th>Data</th>
-        <th>Time</th>
         </thead>
         <tbody class="list">
         
@@ -304,6 +307,7 @@
                 // Go through the collection items
                 this.model.forEach(function(model) {
                     var action = new ActionView({
+                        tagName : 'span',
                         model: model,
                         executor : executor
                     });
@@ -355,7 +359,7 @@
                         console.log("Got answer" , data);
                         system.set("status", data.status);
                         if (data.data) {
-                            system.set("data", JSON.stringify(data.data));
+                            system.set("data", JSON.stringify(data.data, null, 2).replace(/(?:\r\n|\r|\n)/g, '<br />'));
                         }
                         system.set("time", new Date().toLocaleTimeString());
                         
