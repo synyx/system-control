@@ -1,4 +1,4 @@
-package org.synyx.syscontrol.action;
+package org.synyx.syscontrol.execution;
 
 import lombok.Builder;
 import lombok.Data;

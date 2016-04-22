@@ -14,16 +14,20 @@ import java.util.List;
 @RestController
 public class SystemController {
     
+    private final SystemService systemService;
+    
     @Autowired
-    private SystemProvider systemProvider;
-
+    public SystemController(SystemService systemService) {
+        this.systemService = systemService;
+    }
+    
     @RequestMapping("/system")
     public List<System> index() {
-        return systemProvider.listSystems();
+        return systemService.listSystems();
     }
 
     @RequestMapping("/system/{systemName}")
     public System show(@PathVariable("systemName") String systemName) {
-        return systemProvider.getByName(systemName).orElse(null);
+        return systemService.getByName(systemName).orElse(null);
     }
 }

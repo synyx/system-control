@@ -4,8 +4,10 @@ package org.synyx.syscontrol.action;
  * @author Marc Kannegiesser - kannegiesser@synyx.de
  */
 
+import org.synyx.syscontrol.execution.ActionExecutor;
+import org.synyx.syscontrol.execution.ExecutionResult;
 import org.synyx.syscontrol.system.System;
-import org.synyx.syscontrol.system.SystemProvider;
+import org.synyx.syscontrol.system.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,24 +22,28 @@ import java.util.Optional;
 @RequestMapping("/action")
 public class ActionController {
 
-    @Autowired
-    private ActionProvider actionProvider;
+    private final ActionService actionService;
+
+    private final SystemService systemService;
+        
+    private final ActionExecutor actionExecutor;
 
     @Autowired
-    private SystemProvider systemProvider;
-    
-    @Autowired
-    private ActionExecutor actionExecutor;
+    public ActionController(ActionService actionService, SystemService systemService, ActionExecutor actionExecutor) {
+        this.actionService = actionService;
+        this.systemService = systemService;
+        this.actionExecutor = actionExecutor;
+    }
 
     @RequestMapping("/")
     public List<Action> index() {
-        return actionProvider.listActions();
+        return actionService.listActions();
     }
 
     @RequestMapping( value = "/{actionName}", method = RequestMethod.GET)
     public ExecutionResult execute(@PathVariable("actionName") String actionName, @RequestParam("systemName") String systemName) {
-        Optional<Action> action = actionProvider.getByName(actionName);
-        Optional<System> system = systemProvider.getByName(systemName);
+        Optional<Action> action = actionService.getByName(actionName);
+        Optional<System> system = systemService.getByName(systemName);
         
         return actionExecutor.execute(action.orElseThrow(RuntimeException::new), system.orElseThrow(RuntimeException::new));
     }
