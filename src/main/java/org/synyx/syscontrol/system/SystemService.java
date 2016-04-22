@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 @Service
 public class SystemService {
-  
+
     private final SystemProvider systemProvider;
 
 
@@ -24,9 +24,9 @@ public class SystemService {
     public SystemService(SystemProvider systemProvider) {
         this.systemProvider = systemProvider;
     }
-    
+
     public List<System> listSystems() {
-       
+
         return updateCache();
     }
 
@@ -44,8 +44,8 @@ public class SystemService {
         if (cache.isEmpty()) {
             updateCache();
         }
-        
+
         return Optional.ofNullable(cache.get(systemName));
     }
-    
+
 }

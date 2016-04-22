@@ -13,14 +13,14 @@ import java.util.List;
 
 @RestController
 public class SystemController {
-    
+
     private final SystemService systemService;
-    
+
     @Autowired
     public SystemController(SystemService systemService) {
         this.systemService = systemService;
     }
-    
+
     @RequestMapping("/system")
     public List<System> index() {
         return systemService.listSystems();

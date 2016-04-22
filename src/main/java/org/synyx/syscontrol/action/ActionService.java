@@ -13,13 +13,13 @@ import java.util.Optional;
 public class ActionService {
 
     private final ActionProvider actionProvider;
-    
+
     @Autowired
     public ActionService(ActionProvider actionProvider) {
         this.actionProvider = actionProvider;
     }
-    
-    
+
+
     public List<Action> listActions() {
         return actionProvider.getAllActions();
     }

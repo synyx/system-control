@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 public class ActionExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActionExecutor.class);
-    
+
     private final RestTemplate restTemplate;
 
     public ActionExecutor() {
@@ -29,32 +29,29 @@ public class ActionExecutor {
     }
 
     public ActionExecutor(RestTemplate restTemplate) {
-        this.restTemplate =  restTemplate;
+        this.restTemplate = restTemplate;
     }
 
     public ExecutionResult execute(Action action, System system) {
         String url = system.getHost() + action.getTemplate();
         try {
             LOG.info("Executing request action on url {}: {}", url, action);
-        return restTemplate.execute(url, action.getMethod(), authCallback(system), action.getExtractor());
+            return restTemplate.execute(url, action.getMethod(), authCallback(system), action.getExtractor());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return ExecutionResult.builder().status(e.getStatusCode()).data("message", e.getMessage()).build();
         }
-        
+
     }
 
     private RequestCallback authCallback(System system) {
         return (ClientHttpRequest request) -> {
             String auth = system.getUsername() + ":" + system.getPassword();
             byte[] encodedAuth = Base64Utils.encode(
-                    auth.getBytes(Charset.forName("US-ASCII")) );
-            String authHeader = "Basic " + new String( encodedAuth );
-            request.getHeaders().add("Authorization", authHeader );
+                    auth.getBytes(Charset.forName("US-ASCII")));
+            String authHeader = "Basic " + new String(encodedAuth);
+            request.getHeaders().add("Authorization", authHeader);
         };
     }
-
-
-
 
 
 }

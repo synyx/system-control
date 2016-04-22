@@ -25,7 +25,7 @@ public class ActionController {
     private final ActionService actionService;
 
     private final SystemService systemService;
-        
+
     private final ActionExecutor actionExecutor;
 
     @Autowired
@@ -40,11 +40,11 @@ public class ActionController {
         return actionService.listActions();
     }
 
-    @RequestMapping( value = "/{actionName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{actionName}", method = RequestMethod.GET)
     public ExecutionResult execute(@PathVariable("actionName") String actionName, @RequestParam("systemName") String systemName) {
         Optional<Action> action = actionService.getByName(actionName);
         Optional<System> system = systemService.getByName(systemName);
-        
+
         return actionExecutor.execute(action.orElseThrow(RuntimeException::new), system.orElseThrow(RuntimeException::new));
     }
 }

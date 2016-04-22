@@ -20,13 +20,13 @@ import java.util.Set;
 @Builder
 public class Action {
 
-    private static final ResponseExtractor<ExecutionResult>  DEFAULT_EXTRACTOR = (ClientHttpResponse response) ->
+    private static final ResponseExtractor<ExecutionResult> DEFAULT_EXTRACTOR = (ClientHttpResponse response) ->
             ExecutionResult.builder()
                     .status(response.getStatusCode())
                     .data("statusText", response.getStatusText())
                     .build();
 
-    public static final ResponseExtractor<ExecutionResult>  JSON_EXTRACTOR = (ClientHttpResponse response) ->
+    public static final ResponseExtractor<ExecutionResult> JSON_EXTRACTOR = (ClientHttpResponse response) ->
             ExecutionResult.builder()
                     .status(response.getStatusCode())
                     .data("statusText", response.getStatusText())
@@ -38,17 +38,17 @@ public class Action {
 
     @JsonIgnore
     private String template;
-    
+
     @JsonIgnore
     private HttpMethod method = HttpMethod.GET;
 
     @JsonIgnore
     private ResponseExtractor<ExecutionResult> extractor;
-    
+
     @Singular("forTag")
     private Set<String> tagRestriction;
 
-    
+
     @JsonIgnore
     public ResponseExtractor<ExecutionResult> getExtractor() {
         if (extractor != null) {
@@ -57,6 +57,6 @@ public class Action {
             return DEFAULT_EXTRACTOR;
         }
     }
-    
+
 
 }
