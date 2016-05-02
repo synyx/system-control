@@ -5,12 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseExtractor;
 import org.synyx.syscontrol.execution.ExecutionResult;
+import org.synyx.syscontrol.extractor.Extractors;
 
-import java.nio.charset.Charset;
 import java.util.Set;
 
 /**
@@ -19,19 +17,6 @@ import java.util.Set;
 @Data
 @Builder
 public class Action {
-
-    private static final ResponseExtractor<ExecutionResult> DEFAULT_EXTRACTOR = (ClientHttpResponse response) ->
-            ExecutionResult.builder()
-                    .status(response.getStatusCode())
-                    .data("statusText", response.getStatusText())
-                    .build();
-
-    public static final ResponseExtractor<ExecutionResult> JSON_EXTRACTOR = (ClientHttpResponse response) ->
-            ExecutionResult.builder()
-                    .status(response.getStatusCode())
-                    .data("statusText", response.getStatusText())
-                    .data("data", StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()))
-                    .build();
 
 
     private String name;
@@ -54,7 +39,7 @@ public class Action {
         if (extractor != null) {
             return extractor;
         } else {
-            return DEFAULT_EXTRACTOR;
+            return Extractors.DEFAULT_EXTRACTOR;
         }
     }
 
