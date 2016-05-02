@@ -17,7 +17,7 @@ public class Extractors {
                     .status(response.getStatusCode())
                     .data("statusText", response.getStatusText())
                     .build();
-    public static final ResponseExtractor<ExecutionResult> JSON_EXTRACTOR = (ClientHttpResponse response) ->
+    public static final ResponseExtractor<ExecutionResult> FULL_BODY_EXTRACTOR = (ClientHttpResponse response) ->
             ExecutionResult.builder()
                     .status(response.getStatusCode())
                     .data("statusText", response.getStatusText())

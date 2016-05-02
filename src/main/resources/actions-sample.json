@@ -1,0 +1,20 @@
+[
+  {
+    "name":"Get_on_Root",
+    "template":"",
+    "method":"GET",
+    "extractorType":"STATUS"
+  },
+  {
+    "name":"Query_for_Hi",
+    "template":"?q=Hi",
+    "method":"GET",
+    "extractorType":"FULL_BODY"
+  },
+  {
+    "name":"Query_for_Hallo",
+    "template":"?q=Hallo",
+    "method":"GET",
+    "extractorType":"FULL_BODY"
+  }
+]
