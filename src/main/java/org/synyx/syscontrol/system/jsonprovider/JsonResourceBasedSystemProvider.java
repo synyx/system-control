@@ -21,20 +21,15 @@ import java.util.List;
  */
 @Service
 @Primary
-public class JsonFileSystemProvider implements SystemProvider {
+public class JsonResourceBasedSystemProvider implements SystemProvider {
 
-    public static final String SYSTEMS_RESOURCE = "systems.json";
     private final Resource resource;
-
     
-
-
     @Autowired
-    public JsonFileSystemProvider(@Value("${systems.jsonfile}") Resource resource) {
+    public JsonResourceBasedSystemProvider(@Value("${systems.jsonfile}") Resource resource) {
         this.resource = resource;
     }
-
-
+    
     @Override
     public List<System> getAllSystems() {
 
@@ -48,8 +43,6 @@ public class JsonFileSystemProvider implements SystemProvider {
         } catch (IOException e) {
             
             throw new RuntimeException("Cannot parse Resource " + resource + ":" + e.getMessage(), e);
-        } 
-        
-        
+        }
     }
 }
