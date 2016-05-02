@@ -46,19 +46,38 @@ public class ActionExecutorUnitTest {
 
         Action action = TestData.completeAction();
         System system = TestData.completeSystem();
-        
+
         HttpStatus statusCode = HttpStatus.ALREADY_REPORTED;
         String statusText = "Something Failed";
         Mockito.when(restTemplate.execute(Mockito.anyString(),
                 Mockito.eq(action.getMethod()),
                 Mockito.any(RequestCallback.class),
                 Mockito.any(ResponseExtractor.class))).thenThrow(new HttpClientErrorException(statusCode, statusText));
-        
-        
+
+
         ExecutionResult result = actionExecutor.execute(action, system);
 
         Assert.assertThat(result.getStatus(), Matchers.is(statusCode));
         Assert.assertThat((String)result.getData().get("message"), Matchers.containsString(statusText));
+
+    }
+
+    @Test
+    public void testUnexpectedErrorHandling() throws Exception {
+
+        Action action = TestData.completeAction();
+        System system = TestData.completeSystem();
+        
+        Mockito.when(restTemplate.execute(Mockito.anyString(),
+                Mockito.eq(action.getMethod()),
+                Mockito.any(RequestCallback.class),
+                Mockito.any(ResponseExtractor.class))).thenThrow(new NullPointerException("NPE"));
+
+
+        ExecutionResult result = actionExecutor.execute(action, system);
+
+        Assert.assertThat(result.getStatus(), Matchers.nullValue());
+        Assert.assertThat((String)result.getData().get("message"), Matchers.containsString("NPE"));
 
     }
 }

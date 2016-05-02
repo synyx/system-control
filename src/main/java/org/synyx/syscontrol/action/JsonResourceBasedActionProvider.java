@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResponseExtractor;
-import org.synyx.syscontrol.action.view.ActionView;
+import org.synyx.syscontrol.action.view.ActionConfiguration;
 import org.synyx.syscontrol.execution.ExecutionResult;
 
 import java.io.IOException;
@@ -34,22 +34,22 @@ public class JsonResourceBasedActionProvider implements ActionProvider {
     @Override
     public List<Action> getAllActions() {
 
-        List<ActionView> actionViews = readActions();
+        List<ActionConfiguration> actionConfigurations = readActions();
 
-        return actionViews.stream()
+        return actionConfigurations.stream()
                 .map(this::toAction)
                 .collect(Collectors.toList());
 
     }
     
 
-    private List<ActionView> readActions() {
+    private List<ActionConfiguration> readActions() {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory();
         JsonParser jp;
         try (InputStream is = resource.getInputStream()){
             jp = factory.createParser(is);
-            return  mapper.readValue(jp, new TypeReference<List<ActionView>>() {});
+            return  mapper.readValue(jp, new TypeReference<List<ActionConfiguration>>() {});
 
         } catch (IOException e) {
             throw new RuntimeException("Cannot parse resource " + resource + ":" + e.getMessage(), e);
@@ -57,18 +57,18 @@ public class JsonResourceBasedActionProvider implements ActionProvider {
     }
 
 
-    private Action toAction(ActionView actionView) {
-        ResponseExtractor<ExecutionResult> extractor = createExtractorFor(actionView);
+    private Action toAction(ActionConfiguration actionConfiguration) {
+        ResponseExtractor<ExecutionResult> extractor = createExtractorFor(actionConfiguration);
 
         return Action.builder()
-                .template(actionView.getTemplate())
-                .method(actionView.getMethod())
-                .name(actionView.getName())
+                .template(actionConfiguration.getTemplate())
+                .method(actionConfiguration.getMethod())
+                .name(actionConfiguration.getName())
                 .extractor(extractor).build();
     }
 
-    private ResponseExtractor<ExecutionResult> createExtractorFor(ActionView actionView) {
-        return actionView.getExtractorType().createExtractor(actionView.getExtractorConfiguration());
+    private ResponseExtractor<ExecutionResult> createExtractorFor(ActionConfiguration actionConfiguration) {
+        return actionConfiguration.getExtractorType().createExtractor(actionConfiguration.getExtractorConfiguration());
     }
 
 

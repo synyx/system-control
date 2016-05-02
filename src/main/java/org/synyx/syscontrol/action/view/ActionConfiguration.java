@@ -15,7 +15,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActionView {
+public class ActionConfiguration {
 
     private String name;
 

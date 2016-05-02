@@ -41,7 +41,6 @@ public class JsonResourceBasedSystemProvider implements SystemProvider {
             return  mapper.readValue(jp, new TypeReference<List<System>>() {});
            
         } catch (IOException e) {
-            
             throw new RuntimeException("Cannot parse Resource " + resource + ":" + e.getMessage(), e);
         }
     }

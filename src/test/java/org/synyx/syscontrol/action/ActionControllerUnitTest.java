@@ -52,6 +52,20 @@ public class ActionControllerUnitTest {
         Assert.assertThat(result, Matchers.is(expectedResult));
     }
 
+
+    @Test
+    public void handleErrorHandlesError() throws Exception {
+        
+        RuntimeException e = new IllegalArgumentException("wrong");
+        
+        ExecutionResult result = actionController.handleError(e);
+
+        Assert.assertThat(result.getStatus(), Matchers.nullValue());
+        Assert.assertThat((String)result.getData().get("message"), Matchers.containsString(e.getMessage()));
+        Assert.assertThat((String)result.getData().get("message"), Matchers.containsString(e.getClass().getSimpleName()));
+    }
+
+
     @Test(expected = RuntimeException.class)
     public void throwsWhenActionIsNotfound() throws Exception {
         System system = systemList.get(0);
