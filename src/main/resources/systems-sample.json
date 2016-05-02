@@ -1,6 +1,6 @@
 [
   {
-    "name":"Localhost ",
+    "name":"Localhost",
     "host":"http://localhost:8080",
     "tags":[
       "LOCAL",
@@ -42,7 +42,7 @@
     "host":"http://google.com",
     "tags":[
       "GOOGLE",
-      "REMTOTE",
+      "REMOTE",
       "HTTP",
       "INTERNATIONAL"
     ]
