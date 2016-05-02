@@ -1,7 +1,8 @@
-package org.synyx.syscontrol.action;
+package org.synyx.syscontrol.action.view;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.client.ResponseExtractor;
+import org.synyx.syscontrol.extractor.JsonPathResponseExtractor;
 import org.synyx.syscontrol.execution.ExecutionResult;
 import org.synyx.syscontrol.extractor.Extractors;
 

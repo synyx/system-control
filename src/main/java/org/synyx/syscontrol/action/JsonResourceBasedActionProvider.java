@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResponseExtractor;
+import org.synyx.syscontrol.action.view.ActionView;
 import org.synyx.syscontrol.execution.ExecutionResult;
 
 import java.io.IOException;

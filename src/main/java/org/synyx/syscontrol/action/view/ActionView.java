@@ -1,4 +1,4 @@
-package org.synyx.syscontrol.action;
+package org.synyx.syscontrol.action.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package org.synyx.syscontrol.action;
+package org.synyx.syscontrol.extractor;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
