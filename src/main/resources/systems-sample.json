@@ -1,0 +1,60 @@
+[
+  {
+    "name":"Localhost ",
+    "host":"http://localhost:8080",
+    "tags":[
+      "LOCAL",
+      "FOO",
+      "HTTP"
+    ]
+  },
+  {
+    "name":"Localhost (secure)",
+    "host":"https://localhost:8080",
+    "tags":[
+      "LOCAL",
+      "FOO",
+      "HTTPS"
+    ]
+  },
+  {
+    "name":"Google DE",
+    "host":"http://google.de",
+    "tags":[
+      "GOOGLE",
+      "REMOTE",
+      "HTTP",
+      "GERMAN"
+    ]
+  },
+  {
+    "name":"Google DE (secure)",
+    "host":"https://google.de",
+    "tags":[
+      "GOOGLE",
+      "REMOTE",
+      "HTTPS",
+      "GERMAN"
+    ]
+  },
+  {
+    "name":"Google COM",
+    "host":"http://google.com",
+    "tags":[
+      "GOOGLE",
+      "REMTOTE",
+      "HTTP",
+      "INTERNATIONAL"
+    ]
+  },
+  {
+    "name":"Google COM (secure)",
+    "host":"https://google.com",
+    "tags":[
+      "GOOGLE",
+      "REMOTE",
+      "HTTPS",
+      "INTERNATIONAL"
+    ]
+  }
+]
