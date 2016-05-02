@@ -5,6 +5,7 @@ package org.synyx.syscontrol.action;
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,6 +46,16 @@ public class ActionController {
         Optional<Action> action = actionService.getByName(actionName);
         Optional<System> system = systemService.getByName(systemName);
 
-        return actionExecutor.execute(action.orElseThrow(RuntimeException::new), system.orElseThrow(RuntimeException::new));
+        return actionExecutor.execute(
+                action.orElseThrow(() -> new RuntimeException("Action not found: " + actionName)), 
+                system.orElseThrow(() -> new RuntimeException("System not found: " + systemName)));
+    }
+    
+    @ExceptionHandler(RuntimeException.class)
+    public ExecutionResult handleError(RuntimeException e) {
+        return ExecutionResult.builder()
+                .status(null)
+                .data("message", "Unexpected Exception (" + e.getClass().getSimpleName() + "): " + e.getMessage())
+                .build();
     }
 }

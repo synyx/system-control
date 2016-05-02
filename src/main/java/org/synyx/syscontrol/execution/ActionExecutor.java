@@ -39,6 +39,8 @@ public class ActionExecutor {
             return restTemplate.execute(url, action.getMethod(), authCallback(system), action.getExtractor());
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             return ExecutionResult.builder().status(e.getStatusCode()).data("message", e.getMessage()).build();
+        } catch (RuntimeException e) {
+            return ExecutionResult.builder().status(null).data("message", e.getMessage()).build();
         }
 
     }
