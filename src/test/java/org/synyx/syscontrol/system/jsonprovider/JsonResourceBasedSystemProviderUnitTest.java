@@ -20,21 +20,30 @@ public class JsonResourceBasedSystemProviderUnitTest {
 
     @Test
     public void testReadsJson() throws Exception {
-        List<System> expectedSystems = Arrays.asList(TestData.completeSystem());
+        System expectedSystem = TestData.completeSystem();
+        SystemConfiguration configuration = createConfigurationForSystem(expectedSystem);
 
-        // FIXME this currently does not get serialized so the test will fail otherwise
-        // think abour removeing @JsonIgnore or introduce a SystemConfiguration (see ActionConfiguration) 
-        expectedSystems.get(0).setUsername(null);
-        expectedSystems.get(0).setPassword(null);
+        List<SystemConfiguration> configurations = Arrays.asList(configuration);
+
         
-        String json = new ObjectMapper().writeValueAsString(expectedSystems);
+        String json = new ObjectMapper().writeValueAsString(configurations);
         Resource resource = new ByteArrayResource(json.getBytes());
         
         JsonResourceBasedSystemProvider provider = new JsonResourceBasedSystemProvider(resource);
 
         List<System> systems = provider.getAllSystems();
 
-        Assert.assertThat(systems, Matchers.is(expectedSystems));
+        Assert.assertThat(systems, Matchers.is(Arrays.asList(expectedSystem)));
     }
-    
+
+    private SystemConfiguration createConfigurationForSystem(System expectedSystem) {
+        return SystemConfiguration.builder()
+                    .host(expectedSystem.getHost())
+                    .name(expectedSystem.getName())
+                    .username(expectedSystem.getUsername())
+                    .password(expectedSystem.getPassword())
+                    .tags(expectedSystem.getTags())
+                    .build();
+    }
+
 }

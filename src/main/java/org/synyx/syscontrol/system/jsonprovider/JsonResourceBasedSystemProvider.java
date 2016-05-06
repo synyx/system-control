@@ -15,6 +15,7 @@ import org.synyx.syscontrol.system.SystemProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Marc Kannegiesser - kannegiesser@synyx.de
@@ -33,13 +34,31 @@ public class JsonResourceBasedSystemProvider implements SystemProvider {
     @Override
     public List<System> getAllSystems() {
 
+        List<SystemConfiguration> systemConfigurations = readSystems();
+
+        return systemConfigurations.stream()
+                .map(this::toSystem)
+                .collect(Collectors.toList());
+    }
+
+    private System toSystem(SystemConfiguration systemConfiguration) {
+        return System.builder()
+                .tags(systemConfiguration.getTags())
+                .name(systemConfiguration.getName())
+                .host(systemConfiguration.getHost())
+                .username(systemConfiguration.getUsername())
+                .password(systemConfiguration.getPassword())
+                .build();
+    }
+
+    private List<SystemConfiguration> readSystems() {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory();
         JsonParser jp;
         try (InputStream is = resource.getInputStream()){
             jp = factory.createParser(is);
-            return  mapper.readValue(jp, new TypeReference<List<System>>() {});
-           
+            return mapper.readValue(jp, new TypeReference<List<SystemConfiguration>>() {});
+
         } catch (IOException e) {
             throw new RuntimeException("Cannot parse Resource " + resource + ":" + e.getMessage(), e);
         }
